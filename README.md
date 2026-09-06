@@ -48,6 +48,19 @@ will.
 
 ## Install
 
+Nothing to install. The configurations below run it with `npx`, which fetches
+the package the first time and caches it after.
+
+If you would rather pin a version than take whatever is newest — reasonable for
+something that can change your household power limit — use
+`viaris-mcp@0.1.0` in place of `viaris-mcp` everywhere below.
+
+<details>
+<summary><b>From source instead</b></summary>
+
+Worth doing if you want to read the code before pointing it at your charger, or
+if you plan to change it.
+
 ```bash
 git clone https://github.com/Nolex13/viaris-mcp.git
 cd viaris-mcp
@@ -55,7 +68,18 @@ npm install
 npm run build
 ```
 
-This produces `dist/index.js`, which is what your agent will run.
+That produces `dist/index.js`. Everywhere below, replace
+
+```json
+"command": "npx", "args": ["-y", "viaris-mcp"]
+```
+
+with
+
+```json
+"command": "node", "args": ["/absolute/path/to/viaris-mcp/dist/index.js"]
+```
+</details>
 
 ## Configure
 
@@ -92,8 +116,8 @@ Edit the config file:
 {
   "mcpServers": {
     "viaris": {
-      "command": "node",
-      "args": ["/absolute/path/to/viaris-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "viaris-mcp"],
       "env": { "VIARIS_CHARGERS": "garage=192.168.1.100" }
     }
   }
@@ -109,7 +133,7 @@ Restart Claude Desktop. The tools appear under the connectors icon.
 ```bash
 claude mcp add viaris \
   --env VIARIS_CHARGERS=garage=192.168.1.100 \
-  -- node /absolute/path/to/viaris-mcp/dist/index.js
+  -- npx -y viaris-mcp
 ```
 
 Then `/mcp` inside a session to confirm it connected.
@@ -124,8 +148,8 @@ Open the MCP servers panel → *Configure MCP Servers*, and add:
 {
   "mcpServers": {
     "viaris": {
-      "command": "node",
-      "args": ["/absolute/path/to/viaris-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "viaris-mcp"],
       "env": { "VIARIS_CHARGERS": "garage=192.168.1.100" },
       "disabled": false
     }
@@ -142,9 +166,10 @@ In `~/.continue/config.yaml`:
 ```yaml
 mcpServers:
   - name: viaris
-    command: node
+    command: npx
     args:
-      - /absolute/path/to/viaris-mcp/dist/index.js
+      - -y
+      - viaris-mcp
     env:
       VIARIS_CHARGERS: garage=192.168.1.100
 ```
@@ -160,8 +185,8 @@ In your `settings.json`:
   "context_servers": {
     "viaris": {
       "command": {
-        "path": "node",
-        "args": ["/absolute/path/to/viaris-mcp/dist/index.js"],
+        "path": "npx",
+        "args": ["-y", "viaris-mcp"],
         "env": { "VIARIS_CHARGERS": "garage=192.168.1.100" }
       }
     }
@@ -178,7 +203,7 @@ The server speaks MCP over **stdio**. Launch it as a subprocess with
 stdin/stdout:
 
 ```bash
-VIARIS_CHARGERS="garage=192.168.1.100" node /absolute/path/to/viaris-mcp/dist/index.js
+VIARIS_CHARGERS="garage=192.168.1.100" npx -y viaris-mcp
 ```
 
 With the official SDK:
@@ -189,8 +214,8 @@ import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js'
 
 const client = new Client({ name: 'my-agent', version: '1.0.0' });
 await client.connect(new StdioClientTransport({
-  command: 'node',
-  args: ['/absolute/path/to/viaris-mcp/dist/index.js'],
+  command: 'npx',
+  args: ['-y', 'viaris-mcp'],
   env: { ...process.env, VIARIS_CHARGERS: 'garage=192.168.1.100' },
 }));
 
@@ -201,11 +226,15 @@ console.log(await client.listTools());
 **Check it works** without an agent at all:
 
 ```bash
-npm run smoke
+VIARIS_CHARGERS="garage=192.168.1.100" npx -y viaris-mcp
 ```
 
-That starts the server, completes an MCP handshake, and verifies all eleven
-tools are exposed. It does not contact your charger.
+It should start and sit there waiting for MCP traffic on stdin — that means the
+configuration parsed and the server is running. Ctrl-C to stop. A configuration
+mistake exits immediately and says what is wrong.
+
+From a clone, `npm run smoke` goes further: it completes a real MCP handshake
+and verifies every tool is exposed as expected. Neither contacts your charger.
 
 ---
 
@@ -332,10 +361,14 @@ MAC starting `E8:9F:6D` (Espressif — the controller is an ESP32), or read it
 from the Viaris app. Give it a DHCP reservation while you are there: the
 configuration hardcodes the address.
 
-**The agent doesn't list any Viaris tools.** In order of likelihood: the path
-in your config is not absolute; you pointed it at `src/index.ts` instead of
-`dist/index.js`; or you forgot `npm run build`. Run `npm run smoke` — it
-exercises the same startup path without an agent, and prints what is wrong.
+**The agent doesn't list any Viaris tools.** Run the command from your config
+by hand — `VIARIS_CHARGERS="garage=192.168.1.100" npx -y viaris-mcp` — and read
+what it prints. Most failures are visible in one line there and invisible
+inside an MCP client, which tends to report only that the server did not start.
+
+Running from source instead? Check the path in your config is absolute, that it
+points at `dist/index.js` rather than `src/index.ts`, and that you ran
+`npm run build`.
 
 **"no charger configured".** `VIARIS_CHARGERS` did not reach the process. Most
 MCP clients do *not* inherit your shell environment, so the variable has to be
@@ -347,6 +380,10 @@ in the `env` block of the client's config, not in your `.bashrc`.
 **"several chargers are configured: specify..."** You configured more than one
 in `VIARIS_CHARGERS`, so writes need to say which. Tell the agent the name:
 *"set the garage charger to 6 kW"*.
+
+**First start is slow, or fails with no network.** `npx` fetches the package
+the first time and caches it after. An MCP client that gives up quickly may
+time out on that first run: start it once by hand to warm the cache.
 
 **Everything times out.** Check the machine running the agent is on the same
 network as the charger — stdio transport means the server is a subprocess

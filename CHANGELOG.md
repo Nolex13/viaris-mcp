@@ -6,6 +6,13 @@ Notable changes to this project. Format loosely follows
 
 ## [Unreleased]
 
+### Added
+
+- Published to npm, so `npx -y viaris-mcp` replaces cloning and building for
+  anyone who just wants to use it. Releases go out from a tagged GitHub
+  Actions workflow with npm provenance, which ties each published version to
+  the exact commit and workflow that produced it.
+
 ### Changed
 
 - **Breaking:** configuration is now a single environment variable.
