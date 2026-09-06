@@ -24,6 +24,9 @@ const entry: ChargerEntry = {
     getSolarCfg: async () => ({ enabled: false, maxFvPower: 1600, priority: 1 }),
     getHmiCfg: async () => ({ ledsIntensity: 100 }),
     getLocaltime: async () => Math.floor(Date.now() / 1000),
+    getSchedulerElements: async () => [
+      { name: 'mennekes', data: { uid: 17, cfg: { tasks: [], defaultState: 1 } } },
+    ],
     getOcppCfg: async () => ({ enabled: true }),
     getModbusCfg: async () => ({ baud: 9600 }),
     getMqttStat: async () => ({ connected: false }),
@@ -73,5 +76,26 @@ describe('getConfiguration clock', () => {
   it('surfaces a device clock that is ahead', async () => {
     const { clock } = await getConfiguration(entryWithClockDrift(3600));
     expect(clock.driftSeconds).toBeGreaterThan(3500);
+  });
+});
+
+describe('getConfiguration charging', () => {
+  it('reports charging as allowed when the default state is 1', async () => {
+    const { charging } = await getConfiguration(entry);
+    expect(charging.allowedOutsideSchedule).toBe(true);
+  });
+
+  it('reports charging as blocked when the default state is 0', async () => {
+    const blocked: ChargerEntry = {
+      ...entry,
+      device: {
+        ...(entry.device as unknown as Record<string, unknown>),
+        getSchedulerElements: async () => [
+          { name: 'mennekes', data: { uid: 17, cfg: { tasks: [], defaultState: 0 } } },
+        ],
+      } as never,
+    };
+    const { charging } = await getConfiguration(blocked);
+    expect(charging.allowedOutsideSchedule).toBe(false);
   });
 });

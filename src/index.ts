@@ -8,7 +8,7 @@ import { perCharger, perChargerIsError } from './tools/aggregate.js';
 import { getChargerStatus } from './tools/status.js';
 import { getChargingHistory } from './tools/history.js';
 import { getConfiguration } from './tools/configuration.js';
-import { addSchedule, getSchedule, removeSchedule } from './tools/schedule.js';
+import { addSchedule, getSchedule, removeSchedule, setChargingAllowed } from './tools/schedule.js';
 import { setChargerCurrentLimit, setHomePowerLimit } from './tools/limits.js';
 import { setDeviceTime, setLedBrightness, setSolarConfig } from './tools/settings.js';
 
@@ -158,6 +158,28 @@ server.registerTool(
   async ({ charger, element, id }) => {
     try {
       return json(await removeSchedule(registry.resolve(charger), id, element));
+    } catch (err) {
+      return failure(err);
+    }
+  },
+);
+
+server.registerTool(
+  'set_charging_allowed',
+  {
+    description:
+      'Allows or blocks charging outside the scheduled windows. This governs whether a ' +
+      'session may begin: it does NOT interrupt charging already in progress, and the ' +
+      'charger offers no way to do so over the local network. Requires at least one ' +
+      'scheduled window to exist, otherwise the charger refuses the change.',
+    inputSchema: {
+      charger: chargerParam,
+      allowed: z.boolean().describe('true to permit charging, false to block new sessions.'),
+    },
+  },
+  async ({ charger, allowed }) => {
+    try {
+      return json(await setChargingAllowed(registry.resolve(charger), allowed));
     } catch (err) {
       return failure(err);
     }

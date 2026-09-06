@@ -83,6 +83,12 @@ A `GET /device` response looks like this:
 | PUT | `/elements/<name>` | `{"limitPower": <W>, "phaseRotation": n}` |
 | GET | `/modules/evsm/elements` | **Charging state**: `event`, `state`, `idCharge`, `user`, `localtime` |
 
+`/modules/evsm/elements` is **read-only**: `PUT` answers `405 Method Not
+Allowed`. There is no local endpoint that starts or stops a session — the
+vendor app issues those through `apiv3.orbis.com.es`, and the charger receives
+them over its own outbound connection. Captured rather than assumed; see the
+project README for the evidence.
+
 ### Charging state codes
 
 Taken from the firmware's own web interface:
@@ -152,6 +158,15 @@ that crosses midnight, add a day to the end time before subtracting: `23:00` to
 
 Creation is **not idempotent** — the client picks the id, and a retry after a
 lost response can leave you with a duplicate window.
+
+`defaultState` decides what happens outside the windows: `1` permits charging,
+`0` blocks it. Two things to know, both measured:
+
+- The firmware **refuses to set it unless at least one window exists**,
+  answering HTTP 200 with `data: {error: true, msg: ...}` per element. A client
+  that only checks the status code will read a refusal as a success.
+- It does **not** stop a session already in progress, not even when a window
+  ends.
 
 Two quirks on the way back out, both confirmed against real hardware:
 

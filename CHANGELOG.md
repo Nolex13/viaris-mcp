@@ -6,7 +6,19 @@ Notable changes to this project. Format loosely follows
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- `set_charging_allowed` permits or blocks charging outside the scheduled
+  windows, and `get_configuration` reports the current setting. It governs
+  whether a session may begin: it does **not** stop one in progress, and the
+  charger offers no local way to do that at all — the vendor app issues start
+  and stop through the manufacturer's cloud. The README records the evidence.
+
+### Fixed
+
+- Element-collection endpoints answer HTTP 200 and report a refusal inside the
+  body. A rejected write was indistinguishable from a successful one, so a tool
+  could tell an agent it had changed something it had not.
 
 ## [0.1.1] — 2026-09-06
 

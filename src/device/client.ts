@@ -145,6 +145,34 @@ export class ViarisDevice {
     });
   }
 
+  /**
+   * Element-collection endpoints answer HTTP 200 even when they refuse the
+   * write, reporting it per element as `data: {error: true, msg}`. Left
+   * unchecked, a rejected write reads as a success — the caller would tell an
+   * agent it changed something it did not.
+   */
+  private assertNoElementError(path: string, response: unknown): void {
+    if (!Array.isArray(response)) return;
+    for (const element of response) {
+      const data = (element as { name?: string; data?: { error?: boolean; msg?: string } })?.data;
+      if (data?.error === true) {
+        throw new DeviceResponseError(
+          this.host, path, 200,
+          `the device refused the change for "${(element as { name?: string }).name ?? '?'}": ${data.msg ?? 'no reason given'}`,
+        );
+      }
+    }
+  }
+
+  /**
+   * Whether charging is permitted outside the scheduled windows. The firmware
+   * rejects this unless at least one window exists.
+   */
+  async putSchedulerDefaultState(defaultState: number): Promise<void> {
+    const path = '/modules/scheduler/elements?level=cfg';
+    this.assertNoElementError(path, await this.put(path, { defaultState }));
+  }
+
   putLocaltime(epochSeconds: number): Promise<unknown> {
     return this.put('/device/localtime', { localtime: epochSeconds });
   }

@@ -16,6 +16,7 @@ const EXPECTED_TOOLS = [
   'get_charging_schedule',
   'add_charging_schedule',
   'remove_charging_schedule',
+  'set_charging_allowed',
   'set_home_power_limit',
   'set_charger_current_limit',
   'set_solar_config',

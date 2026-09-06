@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { addSchedule, getSchedule, removeSchedule } from '../../src/tools/schedule.js';
+import { addSchedule, getSchedule, removeSchedule, setChargingAllowed } from '../../src/tools/schedule.js';
 import { DeviceResponseError, ValidationError } from '../../src/transport/errors.js';
 import type { ChargerEntry } from '../../src/registry.js';
 
@@ -170,5 +170,35 @@ describe('connector addressing', () => {
     const { entry } = entryWith([], [{ name: 'mennekes' }, { name: 'schuko' }]);
     await expect(getSchedule(entry)).rejects.toBeInstanceOf(ValidationError);
     await expect(getSchedule(entry, 'mennekes')).resolves.toEqual([]);
+  });
+});
+
+describe('setChargingAllowed', () => {
+  const entryWithSpy = () => {
+    const putSchedulerDefaultState = vi.fn(async () => undefined);
+    const entry: ChargerEntry = {
+      name: 'garage', host: '10.0.0.1', device: { putSchedulerDefaultState } as never,
+    };
+    return { entry, putSchedulerDefaultState };
+  };
+
+  it('maps allowed to the firmware default state of 1', async () => {
+    const { entry, putSchedulerDefaultState } = entryWithSpy();
+    await expect(setChargingAllowed(entry, true)).resolves.toEqual({ charger: 'garage', allowed: true });
+    expect(putSchedulerDefaultState).toHaveBeenCalledWith(1);
+  });
+
+  it('maps blocked to 0', async () => {
+    const { entry, putSchedulerDefaultState } = entryWithSpy();
+    await expect(setChargingAllowed(entry, false)).resolves.toEqual({ charger: 'garage', allowed: false });
+    expect(putSchedulerDefaultState).toHaveBeenCalledWith(0);
+  });
+
+  it('lets a refusal from the device reach the caller', async () => {
+    const entry: ChargerEntry = {
+      name: 'garage', host: '10.0.0.1',
+      device: { putSchedulerDefaultState: async () => { throw new DeviceResponseError('10.0.0.1', '/p', 200, 'refused'); } } as never,
+    };
+    await expect(setChargingAllowed(entry, false)).rejects.toBeInstanceOf(DeviceResponseError);
   });
 });

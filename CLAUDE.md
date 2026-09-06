@@ -60,6 +60,12 @@ that are easy to get wrong:
   a different quantity. `set_home_power_limit` deliberately has no ceiling: the
   household limit is a property of the electrical supply, not of the charger.
 
+**A 200 is not a success on element-collection endpoints.** `/elements` and
+`/modules/scheduler/elements` answer HTTP 200 and report a refusal inside the
+body as `data: {error: true, msg}`. The transport sees 200 and returns
+happily, so `device/` checks for it — a rejected write that reads as a success
+is the same failure as a silent fallback, dressed differently.
+
 **States are strings, never codes.** An agent that reads `5` cannot reason about
 it; one that reads `charging` can.
 

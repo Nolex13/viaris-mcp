@@ -245,7 +245,7 @@ and verifies every tool is exposed as expected. Neither contacts your charger.
 | Tool | Parameters | Returns |
 |---|---|---|
 | `get_status` | `charger?`, `element?` | Charging state, live household and vehicle power, active limits |
-| `get_configuration` | `charger?` | Everything readable: device, power, SPL mode, solar, LEDs, clock drift, plus OCPP/Modbus/MQTT under `readOnly` |
+| `get_configuration` | `charger?` | Everything readable: device, power, SPL mode, solar, LEDs, clock drift, whether charging is allowed, plus OCPP/Modbus/MQTT under `readOnly` |
 | `get_charging_history` | `charger?`, `limit?` | Past sessions, newest first: start, end, energy in Wh, duration |
 | `get_charging_schedule` | `charger?`, `element?` | Programmed windows, times as `HH:MM` |
 
@@ -268,6 +268,7 @@ States are `free`, `connected`, `charging`, `paused`, `finished`, `on`, `off`,
 |---|---|---|
 | `add_charging_schedule` | `start`, `end`, `maxPowerW?`, `charger?`, `element?` | Adds a window. `"23:00"`→`"06:00"` crossing midnight is handled |
 | `remove_charging_schedule` | `id`, `charger?`, `element?` | Removes a window by the id `get_charging_schedule` reports |
+| `set_charging_allowed` | `allowed`, `charger?` | Permits or blocks charging outside the scheduled windows. Does **not** stop a session in progress |
 | `set_home_power_limit` | `limitW`, `charger?` | The household power budget, in watts |
 | `set_charger_current_limit` | `amps`, `charger?` | Charger's maximum current, capped at what the device reports |
 | `set_solar_config` | `enabled`, `priority?`, `charger?` | Solar charging on/off and its priority |
@@ -323,6 +324,27 @@ stored history beyond the ~100 sessions the device keeps.
 **Reset, firmware upload and network configuration are deliberately absent.**
 They can leave a charger unreachable. Use the web interface.
 
+**Starting and stopping a charging session is not possible over the local
+network** — not a limitation of this project, but of the charger. Measured
+rather than assumed:
+
+- `PUT /modules/evsm/elements` answers `405 Method Not Allowed`: the resource
+  exists and the firmware declines to make it writable.
+- The charger's own web interface has no stop control anywhere in its code.
+- Setting the scheduler's default state to "blocked", with and without an
+  active window, leaves a running session charging — observed for four minutes
+  past a window boundary at a steady 3.3 kW.
+- Capturing the vendor Android app while pressing its stop button shows **zero
+  packets** to the charger: it talks to `apiv3.orbis.com.es` over HTTPS. The
+  command reaches the charger from the manufacturer's cloud, through the
+  outbound connection the device keeps open.
+
+`set_charging_allowed` is the closest available: it governs whether a session
+may **begin**, and needs at least one scheduled window to exist before the
+firmware accepts it. Whether it actually prevents a new session from starting
+is not yet confirmed on hardware — the write lands and reads back, but the
+blocking effect has not been observed.
+
 ## Possible improvements
 
 Roughly in order of how much they would add:
@@ -334,6 +356,11 @@ Roughly in order of how much they would add:
   updates rather than a tool that polls.
 - **Tariff awareness**: given a time-of-use tariff, let the agent propose a
   charging window rather than only setting one it was told.
+- **A local OCPP server**, which is the one standards-based route to starting
+  and stopping a session without the vendor cloud: the charger speaks OCPP, and
+  `RemoteStopTransaction` is exactly that command. It is a project of its own
+  rather than a tool to add here, but it is the honest answer to the biggest
+  gap above.
 - **A read-only mode** behind an environment variable, for people who want the
   monitoring without the ability to change anything.
 - **Three-phase and multi-connector coverage**, which needs someone with the

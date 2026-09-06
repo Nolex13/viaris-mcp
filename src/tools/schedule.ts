@@ -118,3 +118,28 @@ export async function removeSchedule(
   await entry.device.deleteSchedulerTask(name, id);
   return { removed: id };
 }
+
+export interface ChargingAllowedResult {
+  charger: string;
+  allowed: boolean;
+}
+
+/**
+ * Turns charging on or off outside the scheduled windows.
+ *
+ * Deliberately not called "stop charging": measured against a real charger,
+ * this does **not** interrupt a session already in progress — the car keeps
+ * drawing until it or the cable stops it. Start and stop of a live session are
+ * not exposed on the local API at all; the vendor app issues them through the
+ * manufacturer's cloud.
+ *
+ * The firmware refuses the change unless at least one window exists, which is
+ * why the error it returns is surfaced rather than swallowed.
+ */
+export async function setChargingAllowed(
+  entry: ChargerEntry,
+  allowed: boolean,
+): Promise<ChargingAllowedResult> {
+  await entry.device.putSchedulerDefaultState(allowed ? 1 : 0);
+  return { charger: entry.name, allowed };
+}

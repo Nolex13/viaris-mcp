@@ -36,11 +36,14 @@ Agent  → add_charging_schedule  start 23:00  end 06:00
 | | |
 |---|---|
 | **See** | live household and vehicle power, charging state, past sessions, full configuration |
-| **Set** | household power limit, charger current, solar priority, LED brightness, clock |
+| **Set** | household power limit, charger current, whether charging is allowed, solar priority, LED brightness, clock |
 | **Schedule** | charging windows in plain `HH:MM`, including windows that cross midnight |
 
-Eleven tools in total. Reset, firmware upload and network reconfiguration are
-deliberately absent — they can leave a charger unreachable.
+Twelve tools in total. Reset, firmware upload and network reconfiguration are
+deliberately absent — they can leave a charger unreachable. Starting and
+stopping a session is not possible either, but that one is the charger's
+limitation rather than a choice: the vendor app issues those commands through
+the manufacturer's cloud, never over the local network.
 
 ## Before you install it
 

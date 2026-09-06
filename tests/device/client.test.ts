@@ -65,6 +65,38 @@ describe('ViarisDevice', () => {
     await expect(device.getHistoricRaw()).resolves.toBe('');
   });
 
+  // Element-collection endpoints answer 200 and report a refusal inside the
+  // body. This exact payload came from a real charger asked to set
+  // defaultState with no scheduled window defined.
+  it('throws when the device refuses the change inside a 200 response', async () => {
+    const { device } = deviceWith({
+      '/modules/scheduler/elements?level=cfg': [
+        { name: 'mennekes', data: { error: true, msg: 'El elemento no tiene porgramaciones horarias definidas' } },
+      ],
+    });
+    await expect(device.putSchedulerDefaultState(0)).rejects.toBeInstanceOf(DeviceResponseError);
+  });
+
+  it('names the connector and the reason the device gave', async () => {
+    const { device } = deviceWith({
+      '/modules/scheduler/elements?level=cfg': [
+        { name: 'mennekes', data: { error: true, msg: 'no schedules defined' } },
+      ],
+    });
+    await expect(device.putSchedulerDefaultState(0)).rejects.toThrow(/mennekes.*no schedules defined/);
+  });
+
+  it('accepts a write the device did not refuse', async () => {
+    const { device, request } = deviceWith({
+      '/modules/scheduler/elements?level=cfg': [
+        { name: 'mennekes', data: { uid: 17, cfg: { tasks: [], defaultState: 0 } } },
+      ],
+    });
+    await expect(device.putSchedulerDefaultState(0)).resolves.toBeUndefined();
+    expect(request).toHaveBeenCalledWith(
+      '192.168.1.100', 'PUT', '/modules/scheduler/elements?level=cfg', { defaultState: 0 });
+  });
+
   it('reads the device clock as epoch seconds', async () => {
     const { device, request } = deviceWith({ '/device/localtime': { localtime: 1788635822 } });
     await expect(device.getLocaltime()).resolves.toBe(1788635822);
