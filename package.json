@@ -1,0 +1,63 @@
+{
+  "name": "viaris-mcp",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "viaris-mcp": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "smoke": "npm run build && tsx scripts/smoke.ts",
+    "record-fixtures": "tsx scripts/record-fixtures.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.5",
+    "@eslint/js": "^9.15.0",
+    "eslint": "^9.15.0",
+    "globals": "^15.12.0",
+    "typescript-eslint": "^8.15.0"
+  },
+  "description": "MCP server for Orbis Viaris EV chargers \u2014 monitor power, set limits and schedule charging from your local network.",
+  "license": "MIT",
+  "author": "Nolex13",
+  "homepage": "https://nolex13.github.io/viaris-mcp/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nolex13/viaris-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Nolex13/viaris-mcp/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "ev-charging",
+    "orbis-viaris",
+    "evse",
+    "home-automation",
+    "typescript",
+    "llm",
+    "claude"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ]
+}

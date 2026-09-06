@@ -1,0 +1,13 @@
+node_modules/
+dist/
+coverage/
+*.log
+.DS_Store
+
+# Local editor and IDE state
+.idea/
+.vscode/
+*.swp
+
+# Scratch space used by agent workflows
+.superpowers/
