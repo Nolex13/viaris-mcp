@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest a capability or a tool
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What are you trying to do
+      description: The task, not the implementation. What would you ask the agent, and what should happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: endpoint
+    attributes:
+      label: Which part of the device does it need
+      description: |
+        If you know the endpoint, name it — see [the API reference](https://github.com/Nolex13/viaris-mcp/blob/main/docs/api.md).
+        Note that reset, firmware upload and network configuration are deliberately
+        out of scope: they can make the charger unreachable.
+
+  - type: checkboxes
+    id: writes
+    attributes:
+      label: Does it write to the charger?
+      options:
+        - label: This would change the charger's configuration or behaviour

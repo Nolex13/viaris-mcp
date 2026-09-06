@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security issue
+    url: https://github.com/Nolex13/viaris-mcp/security/advisories/new
+    about: Report privately instead of opening a public issue.
+  - name: Firmware differences
+    url: https://github.com/Nolex13/viaris-mcp/blob/main/docs/api.md
+    about: The API reference notes which firmware the mapping came from.

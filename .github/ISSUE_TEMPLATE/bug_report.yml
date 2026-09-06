@@ -1,0 +1,67 @@
+name: Bug report
+description: Something behaves differently than documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Firmware revisions differ in what they expose and how they answer, so
+        the version fields below are usually the fastest route to a diagnosis.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What you asked the agent, what the tool returned, what you expected instead.
+    validations:
+      required: true
+
+  - type: input
+    id: firmware
+    attributes:
+      label: Charger firmware
+      description: The `fwv` field from `GET /device`, or from the web interface.
+      placeholder: "7.2.53"
+    validations:
+      required: true
+
+  - type: input
+    id: model
+    attributes:
+      label: Charger model
+      placeholder: "VIARIS UNI"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: chargers
+    attributes:
+      label: How many chargers
+      options:
+        - One
+        - Two or more, SPL master/slave
+        - Two or more, independent
+    validations:
+      required: true
+
+  - type: textarea
+    id: raw-response
+    attributes:
+      label: Raw device response, if you have it
+      description: |
+        Often decisive. For a read that misbehaves:
+        `curl -s http://<charger-ip>/device`
+        Please remove your serial, MAC and IP addresses before pasting.
+      render: json
+
+  - type: input
+    id: version
+    attributes:
+      label: viaris-mcp version
+      placeholder: "0.1.0"
+
+  - type: input
+    id: client
+    attributes:
+      label: MCP client
+      placeholder: "Claude Desktop 1.4, Claude Code, Cline…"
