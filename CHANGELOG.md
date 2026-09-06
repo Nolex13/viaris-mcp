@@ -8,6 +8,18 @@ Notable changes to this project. Format loosely follows
 
 Nothing yet.
 
+## [0.1.1] — 2026-09-06
+
+Documentation only; no code changes.
+
+### Fixed
+
+- The changelog claimed the configuration format was still unreleased when it
+  was exactly what 0.1.0 shipped — the tag had been cut after those commits.
+- Removed a roadmap entry promising npm publishing, which 0.1.0 had already
+  done. It was visible on the npm package page, which is where people who
+  arrive from npm read it first.
+
 ## [0.1.0] — 2026-09-06
 
 First public release, on npm as `viaris-mcp`.
@@ -46,5 +58,6 @@ First public release, on npm as `viaris-mcp`.
   measurement before release, and the code simplified accordingly. The
   reasoning is in [docs/design.md](docs/design.md).
 
-[Unreleased]: https://github.com/Nolex13/viaris-mcp/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/Nolex13/viaris-mcp/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/Nolex13/viaris-mcp/releases/tag/v0.1.1
 [0.1.0]: https://github.com/Nolex13/viaris-mcp/releases/tag/v0.1.0
