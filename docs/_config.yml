@@ -1,0 +1,12 @@
+title: viaris-mcp
+description: >-
+  MCP server for Orbis Viaris EV chargers — monitor power, set limits and
+  schedule charging from your local network.
+theme: jekyll-theme-cayman
+show_downloads: false
+
+defaults:
+  - scope:
+      path: ''
+    values:
+      layout: default
