@@ -1,6 +1,6 @@
 {
   "name": "viaris-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "bin": {
     "viaris-mcp": "./dist/index.js"
@@ -30,7 +30,7 @@
     "globals": "^17.12.0",
     "typescript-eslint": "^8.15.0"
   },
-  "description": "MCP server for Orbis Viaris EV chargers \u2014 monitor power, set limits and schedule charging from your local network.",
+  "description": "MCP server for Orbis Viaris EV chargers — monitor power, set limits and schedule charging from your local network.",
   "license": "MIT",
   "author": "Nolex13",
   "homepage": "https://nolex13.github.io/viaris-mcp/",
