@@ -96,7 +96,7 @@ for `?level=all` returns different data with no error.
 
 ## Working against a real charger
 
-`VIARIS_HOST=<ip> npx tsx <script>` will talk to a real device. **Reads are
+`VIARIS_CHARGERS="garage=<ip>" npx tsx <script>` will talk to a real device. **Reads are
 safe. Writes are not** — they change a real household electrical installation.
 Never run a `set_*`, `add_*` or `remove_*` tool against someone's charger
 without their explicit go-ahead, and restore the original value afterwards.

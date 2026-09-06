@@ -5,22 +5,63 @@ import { ValidationError } from '../src/transport/errors.js';
 const request = vi.fn();
 
 describe('loadChargers', () => {
-  it('reads a map of chargers from VIARIS_CHARGERS', () => {
-    expect(loadChargers({ VIARIS_CHARGERS: '{"garage":"192.168.1.100"}' } as never))
+  it('reads a single charger', () => {
+    expect(loadChargers({ VIARIS_CHARGERS: 'garage=192.168.1.100' } as never))
       .toEqual({ garage: '192.168.1.100' });
   });
 
-  it('accepts the VIARIS_HOST shortcut for a single charger', () => {
-    expect(loadChargers({ VIARIS_HOST: '192.168.1.100' } as never))
-      .toEqual({ default: '192.168.1.100' });
+  it('reads several chargers separated by commas', () => {
+    expect(loadChargers({ VIARIS_CHARGERS: 'garage=192.168.1.100,outdoor=192.168.1.101' } as never))
+      .toEqual({ garage: '192.168.1.100', outdoor: '192.168.1.101' });
   });
 
-  it('throws if no charger is configured', () => {
+  it('tolerates spaces around names, addresses and separators', () => {
+    expect(loadChargers({ VIARIS_CHARGERS: ' garage = 192.168.1.100 , outdoor = 192.168.1.101 ' } as never))
+      .toEqual({ garage: '192.168.1.100', outdoor: '192.168.1.101' });
+  });
+
+  it('ignores a trailing comma', () => {
+    expect(loadChargers({ VIARIS_CHARGERS: 'garage=192.168.1.100,' } as never))
+      .toEqual({ garage: '192.168.1.100' });
+  });
+
+  it('keeps an address that contains an equals sign', () => {
+    expect(loadChargers({ VIARIS_CHARGERS: 'garage=host=weird' } as never))
+      .toEqual({ garage: 'host=weird' });
+  });
+
+  it('throws when nothing is configured', () => {
     expect(() => loadChargers({} as never)).toThrow(ValidationError);
   });
 
-  it('throws if VIARIS_CHARGERS is not valid JSON', () => {
-    expect(() => loadChargers({ VIARIS_CHARGERS: 'non-json' } as never)).toThrow(ValidationError);
+  it('throws when the value is only whitespace', () => {
+    expect(() => loadChargers({ VIARIS_CHARGERS: '   ' } as never)).toThrow(ValidationError);
+  });
+
+  it('throws on an entry without an address', () => {
+    expect(() => loadChargers({ VIARIS_CHARGERS: '192.168.1.100' } as never))
+      .toThrow(/name=address/);
+  });
+
+  it('throws on a missing name', () => {
+    expect(() => loadChargers({ VIARIS_CHARGERS: '=192.168.1.100' } as never))
+      .toThrow(ValidationError);
+  });
+
+  it('throws on a missing address', () => {
+    expect(() => loadChargers({ VIARIS_CHARGERS: 'garage=' } as never))
+      .toThrow(/garage/);
+  });
+
+  // Keeping the last one silently would leave a charger configured but
+  // unreachable by name, with nothing to say why.
+  it('throws when the same name appears twice', () => {
+    expect(() => loadChargers({ VIARIS_CHARGERS: 'garage=10.0.0.1,garage=10.0.0.2' } as never))
+      .toThrow(/more than once/);
+  });
+
+  it('names the expected format when nothing is configured', () => {
+    expect(() => loadChargers({} as never)).toThrow(/VIARIS_CHARGERS/);
   });
 });
 

@@ -1,8 +1,11 @@
 // scripts/record-fixtures.ts
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { loadChargers } from '../src/registry.js';
 
-const HOST = process.env.VIARIS_HOST ?? '192.168.1.100';
+// Reuses the server's own configuration so there is a single way to point at
+// a charger. Records from the first one when several are configured.
+const HOST = Object.values(loadChargers(process.env))[0];
 const OUT = 'tests/fixtures';
 
 const ENDPOINTS: Array<[name: string, path: string]> = [

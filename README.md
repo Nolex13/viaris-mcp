@@ -59,17 +59,16 @@ This produces `dist/index.js`, which is what your agent will run.
 
 ## Configure
 
-The server is configured through environment variables. One charger:
+One environment variable, `VIARIS_CHARGERS`, listing each charger as
+`name=address`:
 
 ```bash
-VIARIS_HOST=192.168.1.100
+VIARIS_CHARGERS="garage=192.168.1.100"
+VIARIS_CHARGERS="garage=192.168.1.100,outdoor=192.168.1.101"
 ```
 
-Several, each with a name you will use when talking to the agent:
-
-```bash
-VIARIS_CHARGERS='{"garage":"192.168.1.100","outdoor":"192.168.1.101"}'
-```
+The name is yours to choose — it is how you will refer to the charger when
+talking to the agent, so `garage` beats `charger1`.
 
 With one charger configured, the `charger` parameter is optional everywhere.
 With two or more it becomes required for writes, and reads report on all of
@@ -95,7 +94,7 @@ Edit the config file:
     "viaris": {
       "command": "node",
       "args": ["/absolute/path/to/viaris-mcp/dist/index.js"],
-      "env": { "VIARIS_HOST": "192.168.1.100" }
+      "env": { "VIARIS_CHARGERS": "garage=192.168.1.100" }
     }
   }
 }
@@ -109,7 +108,7 @@ Restart Claude Desktop. The tools appear under the connectors icon.
 
 ```bash
 claude mcp add viaris \
-  --env VIARIS_HOST=192.168.1.100 \
+  --env VIARIS_CHARGERS=garage=192.168.1.100 \
   -- node /absolute/path/to/viaris-mcp/dist/index.js
 ```
 
@@ -127,7 +126,7 @@ Open the MCP servers panel → *Configure MCP Servers*, and add:
     "viaris": {
       "command": "node",
       "args": ["/absolute/path/to/viaris-mcp/dist/index.js"],
-      "env": { "VIARIS_HOST": "192.168.1.100" },
+      "env": { "VIARIS_CHARGERS": "garage=192.168.1.100" },
       "disabled": false
     }
   }
@@ -147,7 +146,7 @@ mcpServers:
     args:
       - /absolute/path/to/viaris-mcp/dist/index.js
     env:
-      VIARIS_HOST: 192.168.1.100
+      VIARIS_CHARGERS: garage=192.168.1.100
 ```
 </details>
 
@@ -163,7 +162,7 @@ In your `settings.json`:
       "command": {
         "path": "node",
         "args": ["/absolute/path/to/viaris-mcp/dist/index.js"],
-        "env": { "VIARIS_HOST": "192.168.1.100" }
+        "env": { "VIARIS_CHARGERS": "garage=192.168.1.100" }
       }
     }
   }
@@ -175,11 +174,11 @@ In your `settings.json`:
 <summary><b>Any other MCP client, or your own agent</b></summary>
 
 The server speaks MCP over **stdio**. Launch it as a subprocess with
-`VIARIS_HOST` (or `VIARIS_CHARGERS`) in its environment, and speak MCP on its
+`VIARIS_CHARGERS` in its environment, and speak MCP on its
 stdin/stdout:
 
 ```bash
-VIARIS_HOST=192.168.1.100 node /absolute/path/to/viaris-mcp/dist/index.js
+VIARIS_CHARGERS="garage=192.168.1.100" node /absolute/path/to/viaris-mcp/dist/index.js
 ```
 
 With the official SDK:
@@ -192,7 +191,7 @@ const client = new Client({ name: 'my-agent', version: '1.0.0' });
 await client.connect(new StdioClientTransport({
   command: 'node',
   args: ['/absolute/path/to/viaris-mcp/dist/index.js'],
-  env: { ...process.env, VIARIS_HOST: '192.168.1.100' },
+  env: { ...process.env, VIARIS_CHARGERS: 'garage=192.168.1.100' },
 }));
 
 console.log(await client.listTools());
@@ -338,10 +337,12 @@ in your config is not absolute; you pointed it at `src/index.ts` instead of
 `dist/index.js`; or you forgot `npm run build`. Run `npm run smoke` — it
 exercises the same startup path without an agent, and prints what is wrong.
 
-**"no charger configured".** Neither `VIARIS_HOST` nor `VIARIS_CHARGERS`
-reached the process. Most MCP clients do *not* inherit your shell environment,
-so the variable has to be in the `env` block of the client's config, not in
-your `.bashrc`.
+**"no charger configured".** `VIARIS_CHARGERS` did not reach the process. Most
+MCP clients do *not* inherit your shell environment, so the variable has to be
+in the `env` block of the client's config, not in your `.bashrc`.
+
+**"expected name=address".** The value needs a name for each charger:
+`garage=192.168.1.100`, not just the address.
 
 **"several chargers are configured: specify..."** You configured more than one
 in `VIARIS_CHARGERS`, so writes need to say which. Tell the agent the name:
@@ -382,7 +383,7 @@ fakes.
 To re-record fixtures from your own charger:
 
 ```bash
-VIARIS_HOST=192.168.1.100 npm run record-fixtures
+VIARIS_CHARGERS="garage=192.168.1.100" npm run record-fixtures
 ```
 
 Note that this writes your serial, MAC and charging history into

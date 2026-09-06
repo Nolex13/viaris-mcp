@@ -88,7 +88,7 @@ Reads are safe. **Writes change a real electrical installation** — never run a
 restore the original value when you are done.
 
 ```bash
-VIARIS_HOST=192.168.1.100 npx tsx -e "
+VIARIS_CHARGERS="garage=192.168.1.100" npx tsx -e "
 import { Transport } from './src/transport/transport.js';
 import { ChargerRegistry, loadChargers } from './src/registry.js';
 import { getChargerStatus } from './src/tools/status.js';

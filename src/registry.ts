@@ -9,37 +9,61 @@ export interface ChargerEntry {
 
 /**
  * Chargers are configured via the environment, because the server is launched
- * as a stdio subprocess by Hermes:
- *   VIARIS_CHARGERS='{"garage":"192.168.1.100","outdoor":"192.168.1.101"}'
- *   VIARIS_HOST='192.168.1.100'   (shortcut for a single charger)
+ * as a stdio subprocess by the agent:
+ *
+ *   VIARIS_CHARGERS="garage=192.168.1.100"
+ *   VIARIS_CHARGERS="garage=192.168.1.100,outdoor=192.168.1.101"
+ *
+ * Deliberately not JSON: this value almost always ends up inside an MCP
+ * client's own JSON config file, where a JSON payload would need its quotes
+ * escaped — the most common way to get the setup wrong.
  */
 export function loadChargers(env: NodeJS.ProcessEnv): Record<string, string> {
-  if (env.VIARIS_CHARGERS) {
-    let parsed: unknown;
-    try {
-      parsed = JSON.parse(env.VIARIS_CHARGERS);
-    } catch {
-      throw new ValidationError('VIARIS_CHARGERS is not valid JSON. Expected {"name":"address"}');
-    }
-    if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
-      throw new ValidationError('VIARIS_CHARGERS must be an object {"name":"address"}');
-    }
-    const entries = Object.entries(parsed as Record<string, unknown>);
-    if (entries.length === 0) throw new ValidationError('VIARIS_CHARGERS contains no chargers');
-    for (const [name, host] of entries) {
-      if (typeof host !== 'string' || host === '') {
-        throw new ValidationError(`invalid address for charger "${name}"`);
-      }
-    }
-    return Object.fromEntries(entries) as Record<string, string>;
+  const raw = env.VIARIS_CHARGERS?.trim();
+  if (!raw) {
+    throw new ValidationError(
+      'no charger configured: set VIARIS_CHARGERS, for example ' +
+      'VIARIS_CHARGERS="garage=192.168.1.100" or ' +
+      'VIARIS_CHARGERS="garage=192.168.1.100,outdoor=192.168.1.101"',
+    );
   }
 
-  if (env.VIARIS_HOST) return { default: env.VIARIS_HOST };
+  const chargers: Record<string, string> = {};
 
-  throw new ValidationError(
-    'no charger configured: set VIARIS_HOST or VIARIS_CHARGERS',
-  );
+  for (const entry of raw.split(',')) {
+    const pair = entry.trim();
+    if (pair === '') continue;
+
+    // Split on the first "=" only: a name never contains one, a host might.
+    const separator = pair.indexOf('=');
+    if (separator === -1) {
+      throw new ValidationError(
+        `invalid charger "${pair}": expected name=address, for example garage=192.168.1.100`,
+      );
+    }
+
+    const name = pair.slice(0, separator).trim();
+    const host = pair.slice(separator + 1).trim();
+
+    if (name === '') throw new ValidationError(`missing charger name in "${pair}"`);
+    if (host === '') throw new ValidationError(`missing address for charger "${name}"`);
+
+    // Silently keeping the last one would leave a charger configured but
+    // unreachable by name, with nothing to indicate why.
+    if (name in chargers) {
+      throw new ValidationError(`charger "${name}" is configured more than once`);
+    }
+
+    chargers[name] = host;
+  }
+
+  if (Object.keys(chargers).length === 0) {
+    throw new ValidationError('VIARIS_CHARGERS contains no chargers');
+  }
+
+  return chargers;
 }
+
 
 export class ChargerRegistry {
   private readonly entries: Map<string, ChargerEntry>;

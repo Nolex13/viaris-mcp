@@ -6,6 +6,22 @@ Notable changes to this project. Format loosely follows
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking:** configuration is now a single environment variable.
+  `VIARIS_HOST` is gone; `VIARIS_CHARGERS` takes `name=address` pairs:
+  `VIARIS_CHARGERS="garage=192.168.1.100,outdoor=192.168.1.101"`.
+
+  Two variables meant two code paths and two ways to get the setup wrong. The
+  format changed away from JSON at the same time, because the value almost
+  always ends up inside an MCP client's own JSON config file, where a JSON
+  payload needs its quotes escaped — the very awkwardness `VIARIS_HOST` had
+  been papering over.
+
+  Every charger now carries a name, so the agent can say "the garage charger"
+  rather than "default", and a name repeated twice is an error rather than one
+  configuration silently winning.
+
 ### Added
 
 - `get_configuration` now reports the device clock and, more usefully, how far

@@ -29,7 +29,7 @@ const FORBIDDEN_SUBSTRINGS = ['reset', 'firmware', 'updater', 'network'];
 const transport = new StdioClientTransport({
   command: process.execPath,
   args: ['dist/index.js'],
-  env: { ...process.env, VIARIS_HOST: '192.0.2.1' }, // TEST-NET-1, RFC 5737
+  env: { ...process.env, VIARIS_CHARGERS: 'test=192.0.2.1' }, // TEST-NET-1, RFC 5737
 });
 
 const client = new Client({ name: 'smoke', version: '0.0.0' });
