@@ -8,8 +8,19 @@ updates:
     groups:
       dev-dependencies:
         dependency-type: development
+    ignore:
+      # typescript-eslint 8.x declares a peer of typescript <6.1, so pulling in
+      # TypeScript 7 makes `npm ci` fail outright rather than producing a
+      # warning. Drop this once typescript-eslint supports it.
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major']
 
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: monthly
+    groups:
+      # Five separate pull requests to bump five actions is noise; they land
+      # together or not at all.
+      actions:
+        patterns: ['*']
