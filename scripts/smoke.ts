@@ -67,6 +67,32 @@ try {
     }
   }
   console.log('ok    every tool carries a description');
+
+  // The published input schemas are the interface a model reads to decide when
+  // and how to call a tool, and nothing else in the suite asserts on them. A
+  // dependency bump once turned a constrained choice into a three-branch anyOf
+  // and dropped every parameter description would have gone unnoticed too.
+  for (const tool of tools) {
+    const properties = (tool.inputSchema as { properties?: Record<string, { description?: string }> })
+      .properties ?? {};
+    for (const [name, property] of Object.entries(properties)) {
+      if (!property.description) {
+        fail(`parameter "${tool.name}.${name}" reaches the model with no description`);
+      }
+    }
+  }
+  console.log('ok    every parameter carries a description');
+
+  const intensity = (
+    tools.find((t) => t.name === 'set_led_brightness')?.inputSchema as
+      { properties?: { intensity?: { enum?: unknown[] } } }
+  )?.properties?.intensity;
+  const values = intensity?.enum;
+  if (!Array.isArray(values) || JSON.stringify([...values].sort((a, b) => Number(a) - Number(b))) !== '[0,50,100]') {
+    fail(`set_led_brightness.intensity should publish enum [0,50,100], got ${JSON.stringify(intensity)}`);
+  } else {
+    console.log('ok    constrained choices publish as an enum');
+  }
 } catch (error) {
   fail(error instanceof Error ? error.message : String(error));
 } finally {

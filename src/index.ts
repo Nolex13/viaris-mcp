@@ -230,7 +230,10 @@ server.registerTool(
     description: 'Sets the charger LED intensity: 0 off, 50 reduced, 100 full.',
     inputSchema: {
       charger: chargerParam,
-      intensity: z.union([z.literal(0), z.literal(50), z.literal(100)])
+      // z.literal with an array emits {type: number, enum: [...]}, which reads
+      // to a model as "pick one of these". A union of three literals emits a
+      // three-branch anyOf that says the same thing far less legibly.
+      intensity: z.literal([0, 50, 100])
         .describe('LED intensity: 0, 50, or 100.'),
     },
   },
