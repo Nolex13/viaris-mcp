@@ -25,7 +25,14 @@ export interface EvsmElement {
 export interface TimeSlot { hourMin: number; duration: number; maxPower?: number }
 
 export interface SchedulerTask {
-  id: number; active: boolean; user: string; group: number; priority: number;
+  id: number;
+  /**
+   * Accepts a boolean on write, but echoes 1 or 0 on read. Typed as both
+   * because this layer describes what the firmware actually sends; `tools/`
+   * normalises it before an agent ever sees it.
+   */
+  active: boolean | number;
+  user: string; group: number; priority: number;
   initTime: { day: number; month: number; weekday: number; timeList: TimeSlot[] };
 }
 

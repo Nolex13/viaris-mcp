@@ -6,6 +6,17 @@ Notable changes to this project. Format loosely follows
 
 ## [Unreleased]
 
+### Fixed
+
+- `get_charging_schedule` reported a window with no power cap as `maxPowerW: 0`
+  rather than `null`. The firmware echoes `maxPower: 0` for "no cap", and
+  passing that through told the agent the exact opposite of what it meant.
+- `get_charging_schedule` leaked the firmware's numeric `active` flag (`1`/`0`)
+  where the documented shape promises a boolean.
+
+Both surfaced while exercising the write tools against a real charger, and
+neither was reachable from the read path alone.
+
 ## [0.1.0] — 2026-09-06
 
 First public release.

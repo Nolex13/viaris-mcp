@@ -42,6 +42,35 @@ describe('getSchedule', () => {
     await expect(getSchedule(entry)).resolves.toEqual([]);
   });
 
+  // Both of these come from what a real charger returned after
+  // add_charging_schedule: {"id":1,...,"active":1,"maxPowerW":0}.
+  it('normalises the numeric active flag the firmware returns', async () => {
+    const fromDevice = {
+      id: 1, active: 1, user: '', group: 0, priority: 1,
+      initTime: { day: 0, month: 0, weekday: 0, timeList: [{ hourMin: 180, duration: 60 }] },
+    };
+    const [window] = await getSchedule(entryWith([fromDevice]).entry);
+    expect(window.active).toBe(true);
+  });
+
+  it('reports a window with no power cap as null, not as zero watts', async () => {
+    const fromDevice = {
+      id: 1, active: 1, user: '', group: 0, priority: 1,
+      initTime: { day: 0, month: 0, weekday: 0, timeList: [{ hourMin: 180, duration: 60, maxPower: 0 }] },
+    };
+    const [window] = await getSchedule(entryWith([fromDevice]).entry);
+    expect(window.maxPowerW).toBeNull();
+  });
+
+  it('still reports a real power cap', async () => {
+    const fromDevice = {
+      id: 1, active: 1, user: '', group: 0, priority: 1,
+      initTime: { day: 0, month: 0, weekday: 0, timeList: [{ hourMin: 180, duration: 60, maxPower: 6000 }] },
+    };
+    const [window] = await getSchedule(entryWith([fromDevice]).entry);
+    expect(window.maxPowerW).toBe(6000);
+  });
+
   it('exposes all windows of a task that has more than one', async () => {
     const multi = {
       id: 4, active: true, user: '', group: 0, priority: 1,

@@ -148,6 +148,12 @@ that crosses midnight, add a day to the end time before subtracting: `23:00` to
 Creation is **not idempotent** — the client picks the id, and a retry after a
 lost response can leave you with a duplicate window.
 
+Two quirks on the way back out, both confirmed against real hardware:
+
+- `active` accepts a boolean on write but comes back as `1` or `0`.
+- `maxPower` comes back as `0` for a window with no power cap. Read literally
+  that says "limited to zero watts", which is the opposite of what it means.
+
 ## SPL — sharing one supply between chargers
 
 `splMode` is the field that matters: `0` independent, `1` master, `2` slave.

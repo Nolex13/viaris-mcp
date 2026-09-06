@@ -61,8 +61,11 @@ function toWindows(task: SchedulerTask): ScheduleWindow[] {
       id: task.id,
       start,
       end,
-      active: task.active,
-      maxPowerW: slot.maxPower ?? null,
+      active: Boolean(task.active),
+      // The firmware echoes maxPower: 0 for a window with no power cap. Passing
+      // that through would tell the agent the window is limited to zero watts —
+      // the opposite of what it means — so both 0 and absent become null.
+      maxPowerW: slot.maxPower ? slot.maxPower : null,
       ...(task.initTime.timeList.length > 1 ? { slot: index } : {}),
     };
   });
