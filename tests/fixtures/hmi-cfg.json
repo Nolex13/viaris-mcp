@@ -1,0 +1,4 @@
+{
+  "status": 200,
+  "body": "{\n\t\"uid\":\t20,\n\t\"cfg\":\t{\n\t\t\"updFlags\":\t1,\n\t\t\"verbosity\":\t3,\n\t\t\"ledsIntensity\":\t100\n\t}\n}"
+}

@@ -1,0 +1,4 @@
+{
+  "status": 200,
+  "body": "[{\n\t\t\"name\":\t\"mennekes\",\n\t\t\"stat\":\t{\n\t\t\t\"event\":\t1,\n\t\t\t\"state\":\t1,\n\t\t\t\"idCharge\":\t1,\n\t\t\t\"user\":\t\"\",\n\t\t\t\"localtime\":\t1788635822\n\t\t}\n\t}]"
+}

@@ -1,0 +1,4 @@
+{
+  "status": 200,
+  "body": "{\n\t\"uid\":\t21,\n\t\"cfg\":\t{\n\t\t\"updFlags\":\t1,\n\t\t\"verbosity\":\t3,\n\t\t\"enabled\":\tfalse,\n\t\t\"addr\":\t5,\n\t\t\"baud\":\t2400,\n\t\t\"bits\":\t8,\n\t\t\"parity\":\t0\n\t}\n}"
+}

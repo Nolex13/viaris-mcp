@@ -1,0 +1,4 @@
+{
+  "status": 200,
+  "body": "{\n\t\"model\":\t\"VIARIS UNI\",\n\t\"serial\":\t\"EVVC36DAABBCC\",\n\t\"maxPower\":\t7360,\n\t\"ampacity\":\t32,\n\t\"maxAmpacity\":\t32,\n\t\"limitPower\":\t4000,\n\t\"selectorPower\":\t7360,\n\t\"mac\":\t\"E8:9F:6D:AA:BB:CC\",\n\t\"fwv\":\t\"7.2.53\",\n\t\"hwv\":\t\"8.0\",\n\t\"fwv_pot\":\t\"1PH_FW_ORB_V05.1 \",\n\t\"hwv_pot\":\t\"1PH_HW_ORB_V1.5\",\n\t\"fwv_cortex\":\t\"003.005.010 Dec 20 2023 09:28:12\",\n\t\"schuko\":\tfalse,\n\t\"rfid\":\tfalse,\n\t\"ethernet\":\tfalse,\n\t\"spl\":\tfalse,\n\t\"ocpp\":\ttrue,\n\t\"modbus\":\ttrue,\n\t\"solar\":\ttrue,\n\t\"extraInfo\":\t\"OB94U220HA1\",\n\t\"elements\":\t[{\n\t\t\t\"id\":\t1,\n\t\t\t\"type\":\t1,\n\t\t\t\"name\":\t\"mennekes\",\n\t\t\t\"info\":\t\"2 Menekes manguera 5mT2\"\n\t\t}],\n\t\"rst_reason\":\t\"\",\n\t\"phase\":\t0,\n\t\"midAnalyzers\":\t0,\n\t\"nvsFreeEntries\":\t376,\n\t\"leakage\":\t1\n}"
+}

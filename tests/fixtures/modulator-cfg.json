@@ -1,0 +1,4 @@
+{
+  "status": 200,
+  "body": "{\n\t\"uid\":\t22,\n\t\"cfg\":\t{\n\t\t\"updFlags\":\t0,\n\t\t\"verbosity\":\t3,\n\t\t\"limitPower\":\t4000,\n\t\t\"limitPowerByPhase\":\t[4000, 4000, 4000],\n\t\t\"selectorPosition\":\t0,\n\t\t\"notifCycle\":\t15,\n\t\t\"pollTimeout\":\t500,\n\t\t\"switchEnabled\":\tfalse,\n\t\t\"fvNightLeakagePower\":\t200,\n\t\t\"fvNightForcedPower\":\t0,\n\t\t\"unswitchCurrent\":\t26000\n\t}\n}"
+}

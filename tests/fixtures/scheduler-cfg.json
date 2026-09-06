@@ -1,0 +1,4 @@
+{
+  "status": 200,
+  "body": "[{\n\t\t\"name\":\t\"mennekes\",\n\t\t\"data\":\t{\n\t\t\t\"uid\":\t17,\n\t\t\t\"cfg\":\t{\n\t\t\t\t\"tasks\":\t[],\n\t\t\t\t\"defaultState\":\t1\n\t\t\t}\n\t\t}\n\t}]"
+}

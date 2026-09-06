@@ -1,0 +1,4 @@
+{
+  "status": 200,
+  "body": "[{\n\t\t\"name\":\t\"mennekes\",\n\t\t\"data\":\t{\n\t\t\t\"uid\":\t16,\n\t\t\t\"cfg\":\t{\n\t\t\t\t\"updFlags\":\t1,\n\t\t\t\t\"verbosity\":\t3,\n\t\t\t\t\"minPower\":\t1380,\n\t\t\t\t\"limitPower\":\t7360,\n\t\t\t\t\"phaseRotation\":\t0,\n\t\t\t\t\"wakeupDuration\":\t0,\n\t\t\t\t\"safetyOnRetries\":\t3,\n\t\t\t\t\"safetyOnTime\":\t1000,\n\t\t\t\t\"maxTemp\":\t0,\n\t\t\t\t\"minTemp\":\t0,\n\t\t\t\t\"timeMaxTemp\":\t0\n\t\t\t}\n\t\t}\n\t}]"
+}

@@ -1,0 +1,4 @@
+{
+  "status": 200,
+  "body": "{\n\t\"uid\":\t11,\n\t\"cfg\":\t{\n\t\t\"updFlags\":\t1,\n\t\t\"verbosity\":\t3,\n\t\t\"enabled\":\tfalse,\n\t\t\"injected\":\ttrue,\n\t\t\"battery\":\tfalse,\n\t\t\"maxFvPower\":\t1600,\n\t\t\"maxPower\":\t0,\n\t\t\"type\":\t12,\n\t\t\"priority\":\t1,\n\t\t\"discTime\":\t60,\n\t\t\"retryTime\":\t0,\n\t\t\"inversor\":\t{\n\t\t\t\"enabled\":\ttrue,\n\t\t\t\"model\":\t1,\n\t\t\t\"batterySaving\":\t100,\n\t\t\t\"inversorIP\":\t\"192.168.1.150\",\n\t\t\t\"inversorPort\":\t502,\n\t\t\t\"modbus\":\t{\n\t\t\t\t\"fc\":\t3,\n\t\t\t\t\"regMap\":\t[]\n\t\t\t}\n\t\t}\n\t}\n}"
+}

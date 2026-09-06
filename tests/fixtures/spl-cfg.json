@@ -1,0 +1,4 @@
+{
+  "status": 200,
+  "body": "{\n\t\"uid\":\t14,\n\t\"cfg\":\t{\n\t\t\"splFactory\":\t1,\n\t\t\"splOpMode\":\t1,\n\t\t\"splMeter\":\t1,\n\t\t\"splMeterAux\":\t255,\n\t\t\"splMode\":\t0,\n\t\t\"splInterface\":\t0,\n\t\t\"splMainPhase\":\t1,\n\t\t\"splIndex\":\t0,\n\t\t\"splCount\":\t1,\n\t\t\"splLimitPower\":\t4000,\n\t\t\"splLimitPowerByPhase\":\t[4000, 4000, 4000],\n\t\t\"splSlaveFailPower\":\t10,\n\t\t\"splIp\":\t\"0.0.0.0\",\n\t\t\"splPort\":\t0\n\t}\n}"
+}

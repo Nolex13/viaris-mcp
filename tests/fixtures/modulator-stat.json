@@ -1,0 +1,4 @@
+{
+  "status": 200,
+  "body": "{\n\t\"uid\":\t22,\n\t\"stat\":\t{\n\t\t\"totalPower\":\t491,\n\t\t\"evsePower\":\t0,\n\t\t\"homePower\":\t491,\n\t\t\"selectorPower\":\t7360,\n\t\t\"mbusDetected\":\tfalse,\n\t\t\"splDetected\":\ttrue,\n\t\t\"ctxDetected\":\ttrue\n\t}\n}"
+}
