@@ -334,7 +334,6 @@ Roughly in order of how much they would add:
   updates rather than a tool that polls.
 - **Tariff awareness**: given a time-of-use tariff, let the agent propose a
   charging window rather than only setting one it was told.
-- **`npx viaris-mcp`** — publish to npm so no clone or build step is needed.
 - **A read-only mode** behind an environment variable, for people who want the
   monitoring without the ability to change anything.
 - **Three-phase and multi-connector coverage**, which needs someone with the
@@ -405,7 +404,7 @@ one that was never mapped. [docs/api.md](docs/api.md) lists what is known.
 
 ```bash
 npm install
-npm test            # 129 tests, no charger required
+npm test            # no charger required
 npm run test:watch
 npm run typecheck
 npm run lint
