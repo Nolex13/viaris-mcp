@@ -51,6 +51,7 @@ requests fired while the device was still busy with previous traffic.
 | PUT | `/device?level=ampacity` | `{"ampacity": 32}` — charger's max current in amps |
 | PUT | `/device?level=midAnalyzers` | `{"midAnalyzers": n}` |
 | PUT | `/device?level=rfid` | `{"rfid": bool, "eocMode": "own"｜"any"}` |
+| GET | `/device/localtime` | `{"localtime": <epoch seconds>}` — the device clock |
 | PUT | `/device/localtime` | `{"localtime": <epoch seconds>}` |
 | PUT | `/device/rt` | `{"period":3,"timeout":30,"status":true}` — enables the realtime stream on the WebSocket. GET is not supported. |
 | POST | `/reset/sys` | `{"timeout":1000,"type":"hard"｜"factoryresetsoft"｜"factoryresethard"}` |
@@ -105,6 +106,10 @@ Taken from the firmware's own web interface:
 | GET | `/modules/modulator?level=cfg` | `limitPower`, `limitPowerByPhase`, `notifCycle`, night-PV handling |
 | PUT | `/modules/modulator` | `{"limitPower": <W>, "limitPowerByPhase":[W,W,W], "switchEnabled": bool, "unswitchCurrent": mA}` |
 | GET | `/modules/modulator/historic` | Charging session history, **CSV inside the JSON `body` field** |
+
+Charging windows fire on the **device's own clock**, so a charger whose clock
+has drifted will run a schedule at the wrong time while reporting it correctly.
+Worth checking `GET /device/localtime` before trusting a schedule.
 
 `limitPower` is the **household** budget, not the charger's capacity. The
 modulator subtracts what the house is drawing and gives the car the remainder,

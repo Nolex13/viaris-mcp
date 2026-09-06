@@ -6,6 +6,14 @@ Notable changes to this project. Format loosely follows
 
 ## [Unreleased]
 
+### Added
+
+- `get_configuration` now reports the device clock and, more usefully, how far
+  it has drifted from the machine running the server. Charging windows fire on
+  the charger's own clock, so one that is hours out runs a schedule at the
+  wrong time while reporting it correctly — previously the clock could be set
+  but never read back.
+
 ### Fixed
 
 - `get_charging_schedule` reported a window with no power cap as `maxPowerW: 0`

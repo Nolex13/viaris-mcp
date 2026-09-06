@@ -126,6 +126,25 @@ export class ViarisDevice {
     return this.put('/modules/hmi', cfg);
   }
 
+  /**
+   * The device clock, as epoch seconds. Not an enveloped payload like the
+   * module reads, so the field is checked here: a clock that came back as
+   * anything other than a finite number would otherwise surface as a
+   * nonsensical date rather than as an error.
+   */
+  getLocaltime(): Promise<number> {
+    const path = '/device/localtime';
+    return this.get<{ localtime?: unknown }>(path).then((r) => {
+      if (typeof r?.localtime !== 'number' || !Number.isFinite(r.localtime)) {
+        throw new DeviceResponseError(
+          this.host, path, 200,
+          'the response does not contain a numeric "localtime"',
+        );
+      }
+      return r.localtime;
+    });
+  }
+
   putLocaltime(epochSeconds: number): Promise<unknown> {
     return this.put('/device/localtime', { localtime: epochSeconds });
   }

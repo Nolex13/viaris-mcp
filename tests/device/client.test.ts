@@ -65,6 +65,21 @@ describe('ViarisDevice', () => {
     await expect(device.getHistoricRaw()).resolves.toBe('');
   });
 
+  it('reads the device clock as epoch seconds', async () => {
+    const { device, request } = deviceWith({ '/device/localtime': { localtime: 1788635822 } });
+    await expect(device.getLocaltime()).resolves.toBe(1788635822);
+    expect(request).toHaveBeenCalledWith('192.168.1.100', 'GET', '/device/localtime');
+  });
+
+  it.each([
+    { label: 'missing', payload: {} },
+    { label: 'not a number', payload: { localtime: 'now' } },
+    { label: 'not finite', payload: { localtime: Number.NaN } },
+  ])('throws DeviceResponseError when localtime is $label', async ({ payload }) => {
+    const { device } = deviceWith({ '/device/localtime': payload });
+    await expect(device.getLocaltime()).rejects.toBeInstanceOf(DeviceResponseError);
+  });
+
   it.each([
     { label: 'getModulatorCfg', call: (d: ViarisDevice) => d.getModulatorCfg(), path: '/modules/modulator?level=cfg' },
     { label: 'getModulatorStat', call: (d: ViarisDevice) => d.getModulatorStat(), path: '/modules/modulator?level=stat' },

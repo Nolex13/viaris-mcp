@@ -217,7 +217,7 @@ tools are exposed. It does not contact your charger.
 | Tool | Parameters | Returns |
 |---|---|---|
 | `get_status` | `charger?`, `element?` | Charging state, live household and vehicle power, active limits |
-| `get_configuration` | `charger?` | Everything readable: device, power, SPL mode, solar, LEDs, plus OCPP/Modbus/MQTT under `readOnly` |
+| `get_configuration` | `charger?` | Everything readable: device, power, SPL mode, solar, LEDs, clock drift, plus OCPP/Modbus/MQTT under `readOnly` |
 | `get_charging_history` | `charger?`, `limit?` | Past sessions, newest first: start, end, energy in Wh, duration |
 | `get_charging_schedule` | `charger?`, `element?` | Programmed windows, times as `HH:MM` |
 

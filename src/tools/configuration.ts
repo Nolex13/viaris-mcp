@@ -14,14 +14,21 @@ export interface ChargerConfiguration {
   power: { homeLimit: number; limitByPhase: number[]; splMode: SplMode; splLimitPower: number; splCount: number };
   solar: { enabled: boolean; maxFvPower: number; priority: number };
   leds: { intensity: number };
+  /**
+   * `driftSeconds` is the interesting half: charging windows fire on the
+   * device's own clock, so a charger that is hours out will run a schedule at
+   * the wrong time while reporting it correctly. Positive means the device is
+   * ahead of this machine.
+   */
+  clock: { deviceTime: string; driftSeconds: number };
   readOnly: { ocpp: unknown; modbus: unknown; mqtt: unknown };
 }
 
 export async function getConfiguration(entry: ChargerEntry): Promise<ChargerConfiguration> {
   const { device } = entry;
-  const [info, modulator, spl, solar, hmi, ocpp, modbus, mqtt] = await Promise.all([
+  const [info, modulator, spl, solar, hmi, localtime, ocpp, modbus, mqtt] = await Promise.all([
     device.getInfo(), device.getModulatorCfg(), device.getSplCfg(),
-    device.getSolarCfg(), device.getHmiCfg(),
+    device.getSolarCfg(), device.getHmiCfg(), device.getLocaltime(),
     device.getOcppCfg(), device.getModbusCfg(), device.getMqttStat(),
   ]);
 
@@ -39,6 +46,10 @@ export async function getConfiguration(entry: ChargerEntry): Promise<ChargerConf
     },
     solar: { enabled: solar.enabled, maxFvPower: solar.maxFvPower, priority: solar.priority },
     leds: { intensity: hmi.ledsIntensity },
+    clock: {
+      deviceTime: new Date(localtime * 1000).toISOString(),
+      driftSeconds: localtime - Math.floor(Date.now() / 1000),
+    },
     readOnly: { ocpp, modbus, mqtt },
   };
 }
